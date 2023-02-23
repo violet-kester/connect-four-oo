@@ -8,11 +8,14 @@
  */
 
 class Game {
-  constructor(height, width, currPlayer, board) {
+  constructor(height, width) {
     this.height = height;
     this.width = width;
-    this.currPlayer = currPlayer;
-    this.board = board;
+    this.currPlayer = 1;
+    this.board = [];
+
+    this.makeBoard();
+    this.makeHtmlBoard();
   }
 
 
@@ -29,9 +32,11 @@ class Game {
 
   makeBoard() {
     console.log('makeBoard');
-    for (let y = 0; y < HEIGHT; y++) {
-      board.push(Array.from({ length: WIDTH }));
+    for (let y = 0; y < this.height; y++) {
+      this.board.push(Array.from({ length: this.width }));
     }
+    console.log(board);
+    console.log(this.board);
   }
 
   /** makeHtmlBoard: make HTML table and row of column tops. */
@@ -164,6 +169,7 @@ class Game {
       }
     }
   }
+
 
 }
 
