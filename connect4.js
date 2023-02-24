@@ -44,11 +44,13 @@ class Game {
   makeHtmlBoard() {
     console.log('makeHtmlBoard start');
     const board = document.getElementById('board');
+    // TODO: Empty the board.
 
     // make column tops (clickable area for adding a piece to that column)
     const top = document.createElement('tr');
     top.setAttribute('id', 'column-top');
-    top.addEventListener('click', this.handleClick);
+    top.addEventListener('click', this.handleClick.bind(this));
+    // TODO: handleClick will be bound to "this"
     console.log(this.handleClick);
 
     for (let x = 0; x < this.width; x++) {
@@ -78,8 +80,9 @@ class Game {
 
   findSpotForCol(x) {
     console.log('findSpotForCol ' + x);
-    for (let y = game.height - 1; y >= 0; y--) {
-      if (!game.board[y][x]) {
+    for (let y = this.height - 1; y >= 0; y--) {
+      if (!this.board[y][x]) {
+        console.log('y: ' + y);
         return y;
       }
     }
@@ -92,7 +95,7 @@ class Game {
     console.log('placeInTable ' + y + ' ' + x);
     const piece = document.createElement('div');
     piece.classList.add('piece');
-    piece.classList.add(`p${game.currPlayer}`);
+    piece.classList.add(`p${this.currPlayer}`);
     piece.style.top = -50 * (y + 2);
 
     const spot = document.getElementById(`c-${y}-${x}`);
@@ -114,27 +117,27 @@ class Game {
     const x = +evt.target.id;
 
     // get next spot in column (if none, ignore click)
-    const y = game.findSpotForCol(x);
+    const y = this.findSpotForCol(x);
     if (y === null) {
       return;
     }
 
     // place piece in board and add to HTML table
-    game.board[y][x] = this.currPlayer;
-    game.placeInTable(y, x);
+    this.board[y][x] = this.currPlayer;
+    this.placeInTable(y, x);
 
     // check for win
-    if (game.checkForWin()) {
-      return endGame(`Player ${game.currPlayer} won!`);
+    if (this.checkForWin()) {
+      return this.endGame(`Player ${this.currPlayer} won!`);
     }
 
     // check for tie
-    if (game.board.every(row => row.every(cell => cell))) {
-      return endGame('Tie!');
+    if (this.board.every(row => row.every(cell => cell))) {
+      return this.endGame('Tie!');
     }
 
     // switch players
-    game.currPlayer = game.currPlayer === 1 ? 2 : 1;
+    this.currPlayer = this.currPlayer === 1 ? 2 : 1;
   }
 
   /** checkForWin: check board cell-by-cell for "does a win start here?" */
@@ -142,6 +145,7 @@ class Game {
   checkForWin() {
     console.log('checkForWin');
     function _win(cells) {
+      console.log(this);
       // Check four cells to see if they're all color of current player
       //  - cells: list of four (y, x) cells
       //  - returns true if all are legal coordinates & all match currPlayer
@@ -149,15 +153,15 @@ class Game {
       return cells.every(
         ([y, x]) =>
           y >= 0 &&
-          y < game.height &&
+          y < this.height &&
           x >= 0 &&
-          x < game.width &&
-          game.board[y][x] === game.currPlayer
+          x < this.width &&
+          this.board[y][x] === this.currPlayer
       );
     }
 
-    for (let y = 0; y < game.height; y++) {
-      for (let x = 0; x < game.width; x++) {
+    for (let y = 0; y < this.height; y++) {
+      for (let x = 0; x < this.width; x++) {
         // get "check list" of 4 cells (starting here) for each of the different
         // ways to win
         const horiz = [[y, x], [y, x + 1], [y, x + 2], [y, x + 3]];
@@ -176,4 +180,6 @@ class Game {
 
 }
 
-const game = new Game(6, 7);
+new Game(6, 7);
+// FIXED: cannot use game constant in the class definitions.
+// what if another game "newBind" was created?
