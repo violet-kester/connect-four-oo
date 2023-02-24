@@ -13,6 +13,7 @@ class Game {
     this.width = width;
     this.currPlayer = 1;
     this.board = [];
+    this.handleClick = this.handleClick.bind(this);
 
     this.makeBoard();
     this.makeHtmlBoard();
@@ -44,12 +45,10 @@ class Game {
 
 
     const board = document.getElementById('board');
+    board.innerHTML = '';
 
     // TODO: Empty the board.
-    const allTDs = Array.from(document.querySelectorAll('td'));
-    for (let TD of allTDs) {
-      TD.innerHTML = '';
-    }
+
     // const allPieces = Array.from(document.querySelectorAll('.piece'));
     // for (let piece of allPieces) {
     //   piece.parentNode.removeChild(piece);
@@ -57,7 +56,9 @@ class Game {
     // make column tops (clickable area for adding a piece to that column)
     const top = document.createElement('tr');
     top.setAttribute('id', 'column-top');
-    top.addEventListener('click', this.handleClick.bind(this));
+    // top.addEventListener('click', this.handleClick.bind(this));
+    top.addEventListener('click', this.handleClick);
+    // NOTE: You can bind in the constructor.
 
 
     for (let x = 0; x < this.width; x++) {
@@ -165,8 +166,10 @@ class Game {
           this.board[y][x] === this.currPlayer
       );
     }
+    // NOTE: _win could've been written as an arrow function, making it
+    // unnecessary to bind _win.
 
-    let newWin = _win.bind(this);
+    let boundWin = _win.bind(this);
 
     for (let y = 0; y < this.height; y++) {
       for (let x = 0; x < this.width; x++) {
@@ -178,7 +181,8 @@ class Game {
         const diagDL = [[y, x], [y + 1, x - 1], [y + 2, x - 2], [y + 3, x - 3]];
 
         // find winner (only checking each win-possibility as needed)
-        if (newWin(horiz) || newWin(vert) || newWin(diagDR) || newWin(diagDL)) {
+        if (boundWin(horiz) || boundWin(vert) || boundWin(diagDR) || boundWin(diagDL)) {
+          // NOTE: Alternatively, use call(this)
           return true;
         }
       }
